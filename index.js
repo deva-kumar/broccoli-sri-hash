@@ -16,7 +16,7 @@ var INTEGRITY_CHECK = new RegExp('integrity=["\']');
 var CROSS_ORIGIN_CHECK = new RegExp('crossorigin=["\']([^"\']+)["\']');
 var MD5_CHECK = /^(.*)[-]([a-z0-9]{32})([.].*)$/;
 var mkdirp = require('mkdirp');
-
+console.log('.........indiseeeee')
 function SRIHashAssets(inputNodes, options) {
   if (!(this instanceof SRIHashAssets)) {
     return new SRIHashAssets(inputNodes, options);
