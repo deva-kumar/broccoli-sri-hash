@@ -15,8 +15,11 @@ var LINT_CHECK = new RegExp('<link[^>]*href=["\']([^"]*)["\'][^>]*>', 'g');
 var INTEGRITY_CHECK = new RegExp('integrity=["\']');
 var CROSS_ORIGIN_CHECK = new RegExp('crossorigin=["\']([^"\']+)["\']');
 var MD5_CHECK = /^(.*)[-]([a-z0-9]{32})([.].*)$/;
+var NESTED_STYLE_CHECK =  /href=["\']([^"\']+)["\']/g;
+var NESTED_HREF_CHECK = /href=["\']([^"\']+)["\']/;
+var NESTED_INTEGRITY_CHECK = /integrity=["\']([^"\']+)["\']/;
+var ORIGIN_CHECK = /crossorigin=["\']([^"\']+)["\']/;
 var mkdirp = require('mkdirp');
-console.log('.........indiseeeee')
 function SRIHashAssets(inputNodes, options) {
   if (!(this instanceof SRIHashAssets)) {
     return new SRIHashAssets(inputNodes, options);
@@ -107,6 +110,21 @@ SRIHashAssets.prototype.addSRI = function addSRI(string, srcDir) {
     filePath = href[1];
 
     return plugin.mungeOutput(match, filePath, base || srcDir);
+  }).replace(NESTED_STYLE_CHECK,function srcMatch(match) {
+    var href = match.match(NESTED_HREF_CHECK);
+    var filePath;
+    var placeholderLinkTag;
+    if (!href) {
+      return match;
+    }
+
+    filePath = href[1];
+    placeholderLinkTag = '<link href="' + filePath + '>'
+    var result = plugin.mungeOutput(placeholderLinkTag, filePath, base || srcDir);
+    var integrity =  result.match(NESTED_INTEGRITY_CHECK)[0];
+    var origin =  result.match(ORIGIN_CHECK)[0];
+    
+    return match + ',e.'+integrity+',e.'+origin;
   });
 };
 
