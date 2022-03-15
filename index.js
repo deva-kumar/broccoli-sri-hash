@@ -110,19 +110,18 @@ SRIHashAssets.prototype.addSRI = function addSRI(string, srcDir) {
     filePath = href[1];
 
     return plugin.mungeOutput(match, filePath, base || srcDir);
-  }).replace(NESTED_STYLE_CHECK,function srcMatch(match) {
+  }).replace(NESTED_STYLE_CHECK,function hrefMatch(match) {
     var href = match.match(NESTED_HREF_CHECK);
-    var filePath;
-    var placeholderLinkTag;
+    var filePath,placeholderLinkTag,result,integrity,origin;
     if (!href) {
       return match;
     }
 
     filePath = href[1];
     placeholderLinkTag = '<link href="' + filePath + '>'
-    var result = plugin.mungeOutput(placeholderLinkTag, filePath, base || srcDir);
-    var integrity =  result.match(NESTED_INTEGRITY_CHECK)[0];
-    var origin =  result.match(ORIGIN_CHECK)[0];
+    result = plugin.mungeOutput(placeholderLinkTag, filePath, base || srcDir);
+    integrity =  result.match(NESTED_INTEGRITY_CHECK)[0];
+    origin =  result.match(ORIGIN_CHECK)[0];
     
     return match + ',e.'+integrity+',e.'+origin;
   });
