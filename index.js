@@ -123,7 +123,7 @@ SRIHashAssets.prototype.addSRI = function addSRI(string, srcDir) {
     integrity =  result.match(NESTED_INTEGRITY_CHECK)[0];
     origin =  result.match(ORIGIN_CHECK)[0].split(/["\']([^"\']+)["\']/)[1];;
     
-    return match + ',e.'+integrity+',e.'+origin;
+    return match + ',e.'+integrity+',e.crossOrigin'+origin;
   });
 };
 
