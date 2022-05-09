@@ -118,12 +118,12 @@ SRIHashAssets.prototype.addSRI = function addSRI(string, srcDir) {
     }
 
     filePath = href[1];
-    placeholderLinkTag = '<link href="' + filePath + '>'
+    placeholderLinkTag = '<link href="' + filePath + '">'
     result = plugin.mungeOutput(placeholderLinkTag, filePath, base || srcDir);
     integrity =  result.match(NESTED_INTEGRITY_CHECK)[0];
-    origin =  result.match(ORIGIN_CHECK)[0].split(/["\']([^"\']+)["\']/)[1];;
+    origin =  result.match(ORIGIN_CHECK)[0].split(/["\']([^"\']+)["\']/)[1];
     
-    return match + ',e.'+integrity+',e.crossOrigin'+origin;
+    return match + ',e.'+integrity+',e.crossOrigin="'+origin+'"';
   });
 };
 
