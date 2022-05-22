@@ -17,7 +17,7 @@ var CROSS_ORIGIN_CHECK = new RegExp('crossorigin=["\']([^"\']+)["\']');
 var MD5_CHECK = /^(.*)[-]([a-z0-9]{32})([.].*)$/;
 var NESTED_STYLE_CHECK =  /href=["\']([^"\']+)["\']/g;
 var NESTED_SCRIPT_CHECK = /src=["\']([^"\']+)["\']/g;
-var NESTED_SRC_CHECK = /src=["\']([^"\']+)["\']/g;
+var NESTED_SRC_CHECK = /src=["\']([^"\']+)["\']/;
 var NESTED_HREF_CHECK = /href=["\']([^"\']+)["\']/;
 var NESTED_INTEGRITY_CHECK = /integrity=["\']([^"\']+)["\']/;
 var ORIGIN_CHECK = /crossorigin=["\']([^"\']+)["\']/;
@@ -114,7 +114,7 @@ SRIHashAssets.prototype.addSRI = function addSRI(string, srcDir) {
     return plugin.mungeOutput(match, filePath, base || srcDir);
   }).replace(NESTED_STYLE_CHECK,function hrefMatch(match) {
     var href = match.match(NESTED_HREF_CHECK);
-    var filePath,placeholderLinkTag,result,integrity,origin;
+    var filePath,placeholderLinkTag,result,integrity,origin,integrityMatch;
     if (!href) {
       return match;
     }
@@ -122,24 +122,35 @@ SRIHashAssets.prototype.addSRI = function addSRI(string, srcDir) {
     filePath = href[1];
     placeholderLinkTag = '<link href="' + filePath + '">'
     result = plugin.mungeOutput(placeholderLinkTag, filePath, base || srcDir);
-    integrity =  result.match(NESTED_INTEGRITY_CHECK)[0];
-    origin =  result.match(ORIGIN_CHECK)[0].split(/["\']([^"\']+)["\']/)[1];
-    
-    return match + ',e.'+integrity+',e.crossOrigin="'+origin+'"';
-  }).replace(NESTED_SCRIPT_CHECK,function hrefMatch(match) {
-    var href = match.match(NESTED_SRC_CHECK);
-    var filePath,placeholderLinkTag,result,integrity,origin;
-    if (!href) {
+    integrityMatch = result.match(NESTED_INTEGRITY_CHECK);
+    if (integrityMatch) {
+      integrity =  integrityMatch[0];
+      origin =  result.match(ORIGIN_CHECK)[0].split(/["\']([^"\']+)["\']/)[1];
+      
+      return match + ',e.'+integrity+',e.crossOrigin="'+origin+'"';
+    } else {
       return match;
     }
 
-    filePath = href[1];
-    placeholderLinkTag = '<script href="' + filePath + '">'
-    result = plugin.mungeOutput(placeholderLinkTag, filePath, base || srcDir);
-    integrity =  result.match(NESTED_SRC_CHECK)[0];
-    origin =  result.match(ORIGIN_CHECK)[0].split(/["\']([^"\']+)["\']/)[1];
-    
-    return match + ',e.'+integrity+',e.crossOrigin="'+origin+'"';
+  }).replace(NESTED_SCRIPT_CHECK,function hrefMatch(match) {
+    var src = match.match(NESTED_SRC_CHECK);
+    var filePath,placeHolderScript,result,integrity,origin,integrityMatch;
+    if (!src) {
+      return match;
+    }
+
+    filePath = src[1];
+    placeHolderScript = '<script src="' + filePath + '">'
+    result = plugin.mungeOutput(placeHolderScript, filePath, base || srcDir);
+    integrityMatch = result.match(NESTED_INTEGRITY_CHECK);
+    if (integrityMatch) {
+      integrity =  integrityMatch[0];
+      origin =  result.match(ORIGIN_CHECK)[0].split(/["\']([^"\']+)["\']/)[1];
+      return match + ',e.'+integrity+',e.crossOrigin="'+origin+'"';
+    } else {
+      return match;
+    }
+
   });
 };
 
