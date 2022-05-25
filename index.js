@@ -16,7 +16,7 @@ var INTEGRITY_CHECK = new RegExp('integrity=["\']');
 var CROSS_ORIGIN_CHECK = new RegExp('crossorigin=["\']([^"\']+)["\']');
 var MD5_CHECK = /^(.*)[-]([a-z0-9]{32})([.].*)$/;
 var NESTED_STYLE_CHECK =  /href=["\']([^"\']+)["\']/g;
-var NESTED_SCRIPT_CHECK = /src=["\']([^"\']+)["\']/g;
+var NESTED_SCRIPT_CHECK = /\.src=["\']([^"\']+)["\']/g;
 var NESTED_SRC_CHECK = /src=["\']([^"\']+)["\']/;
 var NESTED_HREF_CHECK = /href=["\']([^"\']+)["\']/;
 var NESTED_INTEGRITY_CHECK = /integrity=["\']([^"\']+)["\']/;
